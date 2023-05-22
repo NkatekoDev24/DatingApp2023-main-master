@@ -6,12 +6,13 @@ import { UserParams } from '../_models/userParams';
 import { AccountService } from './account.service';
 import { user } from '../_models/user';
 import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MembersService {
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
   members: Member[] = [];
   memberCache = new Map();
   user: user | undefined;

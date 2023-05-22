@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
 import { user } from'../_models/user';
 import { PresenceService } from './presence.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
   private CurrentUserSource = new BehaviorSubject<user | null>(null);
   currentUser$ = this.CurrentUserSource.asObservable();
 
