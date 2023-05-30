@@ -16,6 +16,8 @@ namespace API.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Connection> Connections { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+        public DbSet<UserVisit> Visits {get; set;}
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -33,11 +35,9 @@ namespace API.Data
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
 
-            // Specify primary key
             builder.Entity<UserLike>()
                 .HasKey(k => new { k.SourceUserId, k.TargetUserId });
 
-            // Set the relationships
             builder.Entity<UserLike>()
                 .HasOne(s => s.SourceUser)
                 .WithMany(l => l.LikedUsers)
@@ -50,8 +50,22 @@ namespace API.Data
                 .WithMany(l => l.LikedByUsers)
                 .HasForeignKey(s => s.TargetUserId)
                 .OnDelete(DeleteBehavior.Cascade);
-                // Note: For SQL Server, set the DeleteBehavior to
-                // DeleteBehavior.NoAction or you will get an error during migration.
+
+            builder.Entity<UserVisit>()
+                .HasKey(k => new { k.SourceUserId, k.TargetUserId });
+
+            builder.Entity<UserVisit>()
+                .HasOne(s => s.SourceUser)
+                .WithMany(v => v.VisitedUser)
+                .HasForeignKey(s => s.SourceUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+
+            builder.Entity<UserVisit>()
+                .HasOne(s => s.TargetUser)
+                .WithMany(v => v.VisitedByUser)
+                .HasForeignKey(s => s.TargetUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Message>()
                 .HasOne(u => u.Recipient)
@@ -62,6 +76,8 @@ namespace API.Data
                 .HasOne(u => u.Sender)
                 .WithMany(m => m.MessagesSent)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
         }
     }
 }
